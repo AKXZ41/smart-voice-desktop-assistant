@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "cmsis_os.h"
+#include "ds1302.h"
 
 static char s_city_id[24];
 static char s_api_key[64];
@@ -173,9 +174,42 @@ bool weather_sync_time_from_network(Esp8266Handle *esp)
                 char *time_end = strchr(time_start, '"');
                 if (time_end) {
                     *time_end = '\0';
-                    // 解析时间并同步到DS1302
-                    // 这里需要解析ISO时间格式，暂时简化处理
-                    return true;
+                    // 解析ISO时间格式: 2024-01-01T12:00:00+08:00
+                    // 提取年月日时分秒
+                    int year, month, day, hour, minute, second;
+                    if (sscanf(time_start, "%d-%d-%dT%d:%d:%d", 
+                              &year, &month, &day, &hour, &minute, &second) == 6) {
+                        
+                        // 创建RTC时间结构
+                        RtcDateTime network_time;
+                        network_time.year = year;
+                        network_time.month = month;
+                        network_time.day = day;
+                        network_time.hours = hour;
+                        network_time.minutes = minute;
+                        network_time.seconds = second;
+                        
+                        // 网络时间+1秒，确保同步准确
+                        network_time.seconds++;
+                        if (network_time.seconds >= 60) {
+                            network_time.seconds = 0;
+                            network_time.minutes++;
+                            if (network_time.minutes >= 60) {
+                                network_time.minutes = 0;
+                                network_time.hours++;
+                                if (network_time.hours >= 24) {
+                                    network_time.hours = 0;
+                                    network_time.day++;
+                                }
+                            }
+                        }
+                        
+                        // 同步到DS1302
+                        if (ds1302_write(&network_time)) {
+                            esp8266_send_at_async(esp, "AT+CIPCLOSE");
+                            return true;
+                        }
+                    }
                 }
             }
         }

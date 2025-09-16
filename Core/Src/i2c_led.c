@@ -8,6 +8,7 @@
 #include "i2c_led.h"
 #include "string.h"
 #include <stdio.h>
+#include "picture_rle.h"
 
 #define I2C_LED_ADDR (0x3C << 1) /* SSD1306 常见 I2C 地址 */
 
@@ -98,9 +99,26 @@ void i2c_led_show_time_weather(const char *time_str, const char *weather)
 
 void i2c_led_refresh_background(void)
 {
-    // 占位实现：刷新背景图片
-    // TODO: 实现背景图片切换逻辑
-    // 这里可以切换不同的背景图片或显示效果
+    // 刷新背景图片
+    // 使用RLE压缩的图片数据
+    static uint8_t current_picture = 0;
+    static uint8_t decompressed_buffer[SSD1306_WIDTH * SSD1306_HEIGHT / 8];
+    
+    // 切换图片
+    current_picture = (current_picture + 1) % 2;
+    
+    if (current_picture == 0) {
+        // 显示picture1
+        picture_rle_decompress(picture1_get_data(), picture1_get_compressed_size(), 
+                              decompressed_buffer, sizeof(decompressed_buffer));
+    } else {
+        // 显示picture2
+        picture_rle_decompress(picture2_get_data(), picture2_get_compressed_size(), 
+                              decompressed_buffer, sizeof(decompressed_buffer));
+    }
+    
+    // 将解压缩的数据发送到OLED
+    // TODO: 实现OLED显示逻辑
 }
 
 

@@ -34,6 +34,8 @@
 #include "usart.h"
 #include "ds1302.h"
 #include "weather.h"
+#include "countdown.h"
+#include "display_manager.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -227,9 +229,11 @@ void task_init(void *argument)
   esp8266_init(g_esp, &huart2);
   i2c_led_init(&hi2c1);
   voice_init();
-  voice_bind_uart(&huart1);
+  voice_bind_uart(&huart1);  // 用于VC02通信
   ds1302_init();
   weather_init("101290101", "ea5aa92b06a04c84bf38775d5586a48f");
+  countdown_init();  // 初始化倒计时模块
+  display_manager_init();  // 初始化显示管理模块
   
   // 等待ESP8266启动完成
   osDelay(3000);
@@ -301,27 +305,8 @@ void task_show(void *argument)
   /* USER CODE BEGIN task_show */
   for(;;)
   {
-    // 等待DS1302读取事件
-    uint32_t events = osEventFlagsWait(Event_01Handle, 0x01, osFlagsWaitAny, osWaitForever);
-    
-    if (events & 0x01) {  // DS1302读取请求
-      RtcDateTime now;
-      if (ds1302_read(&now)) {
-        char t[16];
-        (void)snprintf(t, sizeof t, "%02u:%02u", (unsigned)now.hours, (unsigned)now.minutes);
-        
-        // 设置OLED显示事件
-        osEventFlagsSet(Event_02Handle, 0x01);  // 时间显示事件
-        
-        // 显示时间
-        i2c_led_show_time_weather(t, "N/A");
-      } else {
-        // 设置OLED显示事件
-        osEventFlagsSet(Event_02Handle, 0x01);  // 时间显示事件
-        
-        i2c_led_show_time_weather("--:--", "N/A");
-      }
-    }
+    // 每秒触发时间刷新
+    display_manager_force_refresh(DisplayRefresh_Time);
     
     osDelay(1000);
   }
@@ -339,9 +324,18 @@ void task_read(void *argument)
 {
   /* USER CODE BEGIN task_read */
   VoiceCmd cmd;
+  static uint32_t test_counter = 0;
   
   for(;;)
   {
+    // 每10秒测试一次语音功能（用于调试）
+    test_counter++;
+    if (test_counter >= 10000) {  // 10秒
+      test_counter = 0;
+      // 可以在这里添加测试命令
+      // voice_simulate_input("你好小艾");
+    }
+    
     // 等待语音指令
     if (voice_get_cmd(&cmd, 100)) {
       switch (cmd) {
@@ -401,8 +395,66 @@ void task_read(void *argument)
         
         case VoiceCmd_ChangeImage:
           voice_send_reply("已经更换好了照片");
-          i2c_led_refresh_background();
+          display_manager_force_refresh(DisplayRefresh_Background);
           break;
+          
+        case VoiceCmd_Countdown5Min:
+          if (countdown_start(5, NULL)) {
+            // 倒计时启动成功，语音提示已在countdown_start中发送
+          } else {
+            voice_send_reply("倒计时启动失败，可能已经在运行中");
+          }
+          break;
+          
+        case VoiceCmd_Countdown10Min:
+          if (countdown_start(10, NULL)) {
+            // 倒计时启动成功，语音提示已在countdown_start中发送
+          } else {
+            voice_send_reply("倒计时启动失败，可能已经在运行中");
+          }
+          break;
+          
+        case VoiceCmd_CountdownStatus: {
+          CountdownState state = countdown_get_state();
+          if (state == CountdownState_Running) {
+            uint32_t remaining_minutes = countdown_get_remaining_minutes();
+            uint32_t remaining_seconds = countdown_get_remaining_seconds() % 60;
+            char reply[64];
+            snprintf(reply, sizeof(reply), "倒计时还剩%d分%d秒", 
+                    (int)remaining_minutes, (int)remaining_seconds);
+            voice_send_reply(reply);
+          } else if (state == CountdownState_Finished) {
+            voice_send_reply("倒计时已结束");
+          } else {
+            voice_send_reply("当前没有倒计时");
+          }
+          break;
+        }
+        
+        case VoiceCmd_CountdownStop:
+          countdown_stop();
+          break;
+          
+        case VoiceCmd_UpdateWeather: {
+          // 更新天气信息
+          if (weather_is_connected()) {
+            Esp8266Handle *g_esp = usart_get_esp8266_handle();
+            if (weather_fetch_now(g_esp, 5000)) {
+              char desc[32], temp[8];
+              weather_get_last(desc, sizeof(desc), temp, sizeof(temp));
+              char weather_str[32];
+              snprintf(weather_str, sizeof(weather_str), "%s %sC", desc, temp);
+              display_manager_set_weather(weather_str);
+              display_manager_force_refresh(DisplayRefresh_Weather);
+              voice_send_reply("天气信息已更新");
+            } else {
+              voice_send_reply("天气信息更新失败");
+            }
+          } else {
+            voice_send_reply("没有网络连接，无法更新天气");
+          }
+          break;
+        }
           
         case VoiceCmd_Refresh: {
           // 刷新天气信息、时间和背景
@@ -411,15 +463,15 @@ void task_read(void *argument)
             if (weather_fetch_now(g_esp, 5000)) {
               // 同步网络时间到DS1302
               weather_sync_time_from_network(g_esp);
-              // 刷新背景
-              i2c_led_refresh_background();
+              // 强制刷新所有显示内容
+              display_manager_force_refresh(DisplayRefresh_Time | DisplayRefresh_Weather | DisplayRefresh_Background);
               voice_send_reply("天气信息已刷新");
             } else {
               voice_send_reply("天气信息刷新失败");
             }
           } else {
-            // 无网络时只能刷新背景
-            i2c_led_refresh_background();
+            // 无网络时只能刷新背景和时间
+            display_manager_force_refresh(DisplayRefresh_Time | DisplayRefresh_Background);
             voice_send_reply("只能刷新背景了喵，因为没有网络了喵");
           }
           break;
@@ -445,23 +497,33 @@ void task_wifi(void *argument)
 {
   /* USER CODE BEGIN task_wifi */
   Esp8266Handle *g_esp = usart_get_esp8266_handle();
+  uint32_t last_weather_fetch = 0;
+  uint32_t last_background_refresh = 0;
+  
   for(;;)
   {
-    if (weather_fetch_now(g_esp, 5000)) {
-      char desc[32], temp[8];
-      weather_get_last(desc, sizeof desc, temp, sizeof temp);
-      char time_str[16] = {0};
-      RtcDateTime now;
-      if (ds1302_read(&now)) {
-        (void)snprintf(time_str, sizeof time_str, "%02u:%02u", (unsigned)now.hours, (unsigned)now.minutes);
-      } else {
-        strcpy(time_str, "--:--");
+    uint32_t current_time = HAL_GetTick();
+    
+    // 每小时获取天气信息
+    if (current_time - last_weather_fetch >= 3600000) { // 1小时 = 3600000毫秒
+      if (weather_fetch_now(g_esp, 5000)) {
+        char desc[32], temp[8];
+        weather_get_last(desc, sizeof desc, temp, sizeof temp);
+        char weather_str[32];
+        snprintf(weather_str, sizeof weather_str, "%s %sC", desc, temp);
+        display_manager_set_weather(weather_str);
+        display_manager_force_refresh(DisplayRefresh_Weather);
       }
-      char weather_line[24];
-      (void)snprintf(weather_line, sizeof weather_line, "%s %sC", desc, temp);
-      i2c_led_show_time_weather(time_str, weather_line);
+      last_weather_fetch = current_time;
     }
-    osDelay(60000);
+    
+    // 每小时刷新背景
+    if (current_time - last_background_refresh >= 3600000) { // 1小时 = 3600000毫秒
+      display_manager_force_refresh(DisplayRefresh_Background);
+      last_background_refresh = current_time;
+    }
+    
+    osDelay(60000); // 每分钟检查一次
   }
   /* USER CODE END task_wifi */
 }

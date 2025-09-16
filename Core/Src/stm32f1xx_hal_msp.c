@@ -84,5 +84,17 @@ void HAL_MspInit(void)
 }
 
 /* USER CODE BEGIN 1 */
+#include "voice.h"
 
+/**
+  * @brief UART Rx Transfer completed callbacks
+  * @param huart: UART handle
+  * @retval None
+  */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if (huart->Instance == USART1) {
+    voice_on_uart_rx_cplt();
+  }
+}
 /* USER CODE END 1 */

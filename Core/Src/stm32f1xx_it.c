@@ -204,5 +204,5 @@ void USART2_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-
+#include "voice.h"
 /* USER CODE END 1 */

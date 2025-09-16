@@ -1,7 +1,7 @@
 /* USER CODE BEGIN Header */
 /**
  * @file voice.h
- * @brief 语音控制模块接口（占位，解析简单指令）
+ * @brief VC02语音控制模块接口
  */
 /* USER CODE END Header */
 
@@ -27,9 +27,14 @@ typedef enum {
     VoiceCmd_Weather,        // 天气如何
     VoiceCmd_Time,           // 现在几点了
     VoiceCmd_ChangeImage,    // 更换图片
+    VoiceCmd_Countdown5Min,  // 倒计时5分钟
+    VoiceCmd_Countdown10Min, // 倒计时10分钟
+    VoiceCmd_CountdownStatus, // 倒计时状态查询
+    VoiceCmd_CountdownStop,  // 停止倒计时
+    VoiceCmd_UpdateWeather,  // 更新天气
 } VoiceCmd;
 
-/** \brief 初始化语音模块（队列等） */
+/** \brief 初始化VC02语音模块 */
 void voice_init(void);
 
 /** \brief 获取一条解析出的语音指令（带超时） */

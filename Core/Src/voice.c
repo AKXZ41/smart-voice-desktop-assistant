@@ -1,7 +1,7 @@
 /* USER CODE BEGIN Header */
 /**
  * @file voice.c
- * @brief 语音控制模块实现（占位，关键字解析）
+ * @brief VC02语音控制模块实现
  */
 /* USER CODE END Header */
 
@@ -47,6 +47,16 @@ void voice_feed_text(const char *text)
         cmd = VoiceCmd_Time;
     } else if (strstr(text, "更换图片") || strstr(text, "换图片") || strstr(text, "换背景")) {
         cmd = VoiceCmd_ChangeImage;
+    } else if (strstr(text, "倒计时5分钟") || strstr(text, "倒计时五分钟") || strstr(text, "5分钟倒计时")) {
+        cmd = VoiceCmd_Countdown5Min;
+    } else if (strstr(text, "倒计时10分钟") || strstr(text, "倒计时十分钟") || strstr(text, "10分钟倒计时")) {
+        cmd = VoiceCmd_Countdown10Min;
+    } else if (strstr(text, "倒计时状态") || strstr(text, "倒计时查询") || strstr(text, "倒计时还剩")) {
+        cmd = VoiceCmd_CountdownStatus;
+    } else if (strstr(text, "停止倒计时") || strstr(text, "取消倒计时") || strstr(text, "倒计时停止")) {
+        cmd = VoiceCmd_CountdownStop;
+    } else if (strstr(text, "更新天气") || strstr(text, "刷新天气") || strstr(text, "天气更新")) {
+        cmd = VoiceCmd_UpdateWeather;
     } else if (strstr(text, "刷新") || strstr(text, "refresh")) {
         cmd = VoiceCmd_Refresh;
     }
