@@ -1,0 +1,47 @@
+.\xiaoai\main.o: ..\Core\Src\main.c
+.\xiaoai\main.o: ../Core/Inc/main.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h
+.\xiaoai\main.o: ../Core/Inc/stm32f1xx_hal_conf.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h
+.\xiaoai\main.o: ../Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f1xx.h
+.\xiaoai\main.o: ../Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h
+.\xiaoai\main.o: ../Drivers/CMSIS/Include/core_cm3.h
+.\xiaoai\main.o: E:\work file\keil\ARM\ARMCC\Bin\..\include\stdint.h
+.\xiaoai\main.o: ../Drivers/CMSIS/Include/cmsis_version.h
+.\xiaoai\main.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+.\xiaoai\main.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+.\xiaoai\main.o: ../Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
+.\xiaoai\main.o: E:\work file\keil\ARM\ARMCC\Bin\..\include\stddef.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc_ex.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio_ex.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_exti.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma_ex.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_cortex.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
+.\xiaoai\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
+.\xiaoai\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h
+.\xiaoai\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+.\xiaoai\main.o: ../Core/Inc/FreeRTOSConfig.h
+.\xiaoai\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+.\xiaoai\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+.\xiaoai\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+.\xiaoai\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3/portmacro.h
+.\xiaoai\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+.\xiaoai\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+.\xiaoai\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
+.\xiaoai\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
+.\xiaoai\main.o: ../Core/Inc/i2c.h
+.\xiaoai\main.o: ../Core/Inc/usart.h
+.\xiaoai\main.o: ../Core/Inc/esp8266.h
+.\xiaoai\main.o: E:\work file\keil\ARM\ARMCC\Bin\..\include\stdbool.h
+.\xiaoai\main.o: ../Core/Inc/gpio.h
