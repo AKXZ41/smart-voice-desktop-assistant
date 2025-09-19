@@ -54,11 +54,10 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(DS1302_CE_GPIO_Port, DS1302_CE_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, IO_LED_Pin|EP_SDI_Pin|EP_SCK_Pin|EP_CS_Pin
-                          |EP_DC_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(IO_LED_GPIO_Port, IO_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, EP_RST_Pin|DS1302_SCL_Pin|DS1302_DATA_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, DS1302_SCL_Pin|DS1302_DATA_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : DS1302_CE_Pin */
   GPIO_InitStruct.Pin = DS1302_CE_Pin;
@@ -67,37 +66,19 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(DS1302_CE_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : IO_LED_Pin EP_SDI_Pin EP_SCK_Pin EP_CS_Pin
-                           EP_DC_Pin */
-  GPIO_InitStruct.Pin = IO_LED_Pin|EP_SDI_Pin|EP_SCK_Pin|EP_CS_Pin
-                          |EP_DC_Pin;
+  /*Configure GPIO pin : IO_LED_Pin */
+  GPIO_InitStruct.Pin = IO_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(IO_LED_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : EP_RST_Pin DS1302_SCL_Pin DS1302_DATA_Pin */
-  GPIO_InitStruct.Pin = EP_RST_Pin|DS1302_SCL_Pin|DS1302_DATA_Pin;
+  /*Configure GPIO pins : DS1302_SCL_Pin DS1302_DATA_Pin */
+  GPIO_InitStruct.Pin = DS1302_SCL_Pin|DS1302_DATA_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : EP_BUSY_Pin */
-  GPIO_InitStruct.Pin = EP_BUSY_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(EP_BUSY_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PC13 (STM32自带LED) */
-  GPIO_InitStruct.Pin = GPIO_PIN_13;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;  // 改为高速
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-  
-  /* 初始化PC13为高电平（LED熄灭） */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
 
 }
 

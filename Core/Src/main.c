@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "debug_uart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -92,9 +92,18 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
+  MX_USART3_UART_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-
+  // Initialize debug UART for CH340N communication
+  debug_uart_init();
+  
+  // Send startup message
+  debug_uart_printf("\r\n=== STM32F103C8T6 智能语音桌面助手 ===\r\n");
+  debug_uart_printf("Debug UART (USART3) initialized successfully!\r\n");
+  debug_uart_printf("Connected via CH340N USB-to-Serial converter\r\n");
+  debug_uart_printf("Baud Rate: 115200\r\n");
+  debug_uart_printf("==========================================\r\n\r\n");
   /* USER CODE END 2 */
 
   /* Init scheduler */

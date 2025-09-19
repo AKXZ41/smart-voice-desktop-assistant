@@ -22,8 +22,6 @@
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
-#include <stdio.h>
-#include <string.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
